@@ -2,31 +2,61 @@ package com.heguodong.builder;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
+
+import com.heguodong.builder.classic.Cookies;
+import com.heguodong.builder.classic.Director;
+import com.heguodong.builder.classic.RoundCookiesBuilder;
+import com.heguodong.builder.classic.SquareCookiesBuilder;
+import com.heguodong.builder.variant.Person;
 
 
 /**
- *定义：
- *建造者模式：将一个复杂的对象的构建与它的表示分离，使得同样的构建过程可以创建不同的表示。
  *
- *实用范围
- *1、当创建复杂对象的算法应该独立于该对象的组成部分以及它们的装配方式时。
- *2、当构造过程必须允许被构造的对象有不同表示时。
- *
- *角色
- *在这样的设计模式中，有以下几个角色：
- *1、Builder：为创建一个产品对象的各个部件指定抽象接口。
- *2、ConcreteBuilder：实现Builder的接口以构造和装配该产品的各个部件，定义并明确它所创
- *   建的表示，并提供一个检索产品的接口。
- *3、Director：构造一个使用Builder接口的对象，指导构建过程。
- *4、Product：表示被构造的复杂对象。ConcreteBuilder创建该产品的内部表示并定义它的装配
- *   过程，包含定义组成部件的类，包括将这些部件装配成最终产品的接口。
- *http://blog.csdn.net/jason0539/article/details/44992733
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
+    private TextView tv_classic ,tv_variant;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        tv_classic = findViewById(R.id.tv_classic);
+        tv_variant = findViewById(R.id.tv_variant);
+        tv_classic.setOnClickListener(this);
+        tv_variant.setOnClickListener(this);
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.tv_classic :
+                //使用经典 builder 模式创建对象，解决的问题主要是啥？
+                //经典的Builder模式重点在于抽象出对象创建的步骤，并通过调用不同的具体实现类从而得到不同的结果
+                //(new Director(new SquareCookiesBuilder()).createCookies())
+                Cookies squareCookies = new Director(new SquareCookiesBuilder()).createCookies().getCookies();
+                Log.e("heguodong"," squareCookies ==> " + squareCookies.toString());
+                Cookies roundCookies = new Director(new RoundCookiesBuilder()).createCookies().getCookies();
+                Log.e("heguodong"," roundCookies ==> " + roundCookies.toString());
+
+
+
+                break;
+            case R.id.tv_variant :
+                //使用变种的 builder 模式创建对象，解决的主要问题是啥？
+                //变种的Builder模式的目的在于减少对象创建过程中引入的多个重载构造函数，可选参数以及setters过度使用导致的不必要的复杂性
+                Person.Builder builder = new Person.Builder();
+                Person person = builder.name("张三")
+                                        .age(16)
+                                        .height(180.00)
+                                        .weight(180.00)
+                                        .build();
+                Log.e("heguodong"," person ==> " + person.toString());
+                break;
+        }
     }
 }
